@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+html {
+  scroll-behavior: smooth;
+}
+
+@theme {
+  --color-luxury-gold: #D4AF37;
+  --color-luxury-gold-light: #F1E5AC;
+  --color-luxury-gold-dark: #996515;
+  --color-luxury-indigo: #1A1A2E;
+  --color-luxury-indigo-light: #16213E;
+  --color-luxury-marble: #F8F9FA;
+  --color-luxury-charcoal: #333333;
+
+  --font-playfair: "Playfair Display", serif;
+  --font-inter: "Inter", sans-serif;
+
+  --color-luxury-ivory: #F8F5F0;
+  --color-luxury-gold-brand: #C6A14A;
+  --color-luxury-gold-deep: #B88A2E;
+  --color-luxury-beige: #EDE6DC;
+
+  --background-image-brand-gold-gradient: linear-gradient(90deg, #C6A14A 0%, #B88A2E 100%);
+
+  /* Standard Spacing Tokens */
+  --spacing-section-desktop: 6rem;
+  --spacing-section-mobile: 3rem;
+  --spacing-gap-desktop: 4rem;
+  --spacing-gap-mobile: 2rem;
+}
+
+@layer utilities {
+  .container-luxury {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full;
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-luxury-marble text-luxury-charcoal font-inter overflow-x-hidden;
+    font-size: 18px;
+    line-height: 1.6;
+    letter-spacing: 0.01em;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-playfair;
+  }
+}
+
+@layer components {
+  .btn-gold {
+    @apply bg-luxury-gold text-white px-6 py-2 rounded-sm hover:bg-luxury-gold-dark transition-all duration-300 font-medium;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-luxury-marble;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-luxury-gold/50 rounded-full hover:bg-luxury-gold;
+}

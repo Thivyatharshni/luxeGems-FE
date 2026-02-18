@@ -1,0 +1,50 @@
+import axios from 'axios';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+
+const api = axios.create({
+    baseURL: API_URL,
+    withCredentials: true,
+    headers: {
+        'Content-Type': 'application/json',
+    },
+});
+
+// Request interceptor to attach token
+api.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => Promise.reject(error)
+);
+
+// Response interceptor for global error handling
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        const { response } = error;
+
+        if (response) {
+            // 401 Unauthorized: Clear session and redirect to login
+            if (response.status === 401 && !error.config.url.includes('/auth/')) {
+                // Redux state will be cleared via a dedicated action if we have access to store
+                // For now, redirect or let the calling component handle it
+                window.location.href = '/login';
+            }
+
+            // 409 Conflict: Special handling for Price Lock Expired
+            if (response.status === 409) {
+                // This will be handled by the feature logic or a global modal via Redux
+                console.warn('Price Lock Expired or Inventory Conflict');
+            }
+        }
+
+        return Promise.reject(error);
+    }
+);
+
+export default api;
