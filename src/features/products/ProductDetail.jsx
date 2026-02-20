@@ -14,6 +14,7 @@ const ProductDetail = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { selectedProduct: product, isLoading, error } = useSelector((state) => state.products);
+    const { isAuthenticated } = useSelector((state) => state.auth);
 
     useEffect(() => {
         dispatch(fetchProductById(id));
@@ -64,6 +65,11 @@ const ProductDetail = () => {
     const { title, pricing, specifications, description, images, category } = product;
 
     const handleAddToCart = async () => {
+        if (!isAuthenticated) {
+            navigate(`/login?redirect=/products/${id}`);
+            return;
+        }
+
         try {
             await dispatch(addToCart({
                 productId: product._id,

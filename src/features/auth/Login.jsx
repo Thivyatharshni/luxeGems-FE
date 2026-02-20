@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import AuthLayout from '../../layout/AuthLayout';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
@@ -14,6 +14,8 @@ const Login = () => {
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const redirectPath = searchParams.get('redirect');
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -38,8 +40,10 @@ const Login = () => {
             dispatch(setCredentials(data.data.user));
             console.log('Credentials set in Redux');
 
-            // Redirect based on role
-            if (data.data.user.role === 'admin' || data.data.user.role === 'inventory_manager') {
+            // Redirect logic
+            if (redirectPath) {
+                navigate(redirectPath);
+            } else if (data.data.user.role === 'admin' || data.data.user.role === 'inventory_manager') {
                 navigate('/admin');
             } else {
                 navigate('/');

@@ -257,12 +257,21 @@ const Home = () => {
 
     const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    // CMS Content Resolution
-    const heroSection = cms.page?.sections?.find(s => s.type === 'Hero' && s.isActive);
-    const heroContent = heroSection?.content;
+    // Default / Fallback Hero Content
+    const defaultHero = {
+        title: 'LuxeGems',
+        subtitle: 'Experience Pure Elegance & Timeless Mastery',
+        mediaType: 'video',
+        videoUrl: 'https://res.cloudinary.com/dnpk9egyk/video/upload/q_auto,f_auto/v1708416000/luxegems/homepage/hero-cinematic-main.mp4',
+        backgroundImage: cld('luxegems/homepage/hero-fallback-luxury'),
+        isActive: true
+    };
 
-    // Loading State
-    if (cms.isLoading && !heroContent) {
+    const heroSection = cms.page?.sections?.find(s => s.type === 'Hero' && s.isActive);
+    const heroContent = heroSection?.content || defaultHero;
+
+    // Loading State - only show if we have absolutely nothing
+    if (cms.isLoading && !cms.page) {
         return (
             <div className="h-screen flex items-center justify-center bg-luxury-indigo text-luxury-gold">
                 <div className="text-center">
@@ -272,8 +281,6 @@ const Home = () => {
             </div>
         );
     }
-
-    if (!heroContent) return null;
 
     return (
         <div className="flex flex-col overflow-x-hidden">
@@ -540,6 +547,39 @@ const Home = () => {
                             </motion.div>
                         ))}
                     </motion.div>
+                </div>
+            </section>
+
+            {/* ═══════════════════════════════════════════════════════════════
+                SECTION 6 — EXQUISITE ARRIVALS (Featured Products)
+            ═══════════════════════════════════════════════════════════════ */}
+            <section className="bg-white py-16 lg:py-24 border-t border-luxury-gold/5">
+                <div className="container-luxury">
+                    <SectionHeader
+                        eyebrow="New Arrivals"
+                        title="Exquisite Arrivals"
+                        subtitle="Discover our latest masterworks, freshly emerged from the vault."
+                    />
+
+                    {products && products.length > 0 ? (
+                        <motion.div
+                            variants={staggerContainer}
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true, margin: '-60px' }}
+                            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8"
+                        >
+                            {products.map((product) => (
+                                <motion.div key={product._id} variants={staggerItem}>
+                                    <ProductCard product={product} />
+                                </motion.div>
+                            ))}
+                        </motion.div>
+                    ) : (
+                        <div className="py-20 text-center">
+                            <p className="text-gray-400 font-playfair italic">New treasures are being curated...</p>
+                        </div>
+                    )}
                 </div>
             </section>
 

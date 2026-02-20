@@ -11,7 +11,8 @@ import AdvancedFilterDrawer from './AdvancedFilterDrawer';
 const ProductListing = () => {
     const dispatch = useDispatch();
     const [searchParams, setSearchParams] = useSearchParams();
-    const { items: products, categories, isLoading } = useSelector((state) => state.products);
+    const { items, categories, isLoading } = useSelector((state) => state.products);
+    const products = items || [];
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -114,7 +115,7 @@ const ProductListing = () => {
                 activeFilters={filters}
                 onFilterChange={handleFilterChange}
                 onOpenDrawer={() => setIsDrawerOpen(true)}
-                productsCount={products.length}
+                productsCount={products?.length || 0}
             />
 
             <div className="container-luxury py-10 lg:py-16">

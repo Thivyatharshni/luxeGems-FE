@@ -9,7 +9,7 @@ if (!API_URL && import.meta.env.PROD) {
 const API_BASE = API_URL || 'http://localhost:5000/api/v1';
 
 const api = axios.create({
-    baseURL: API_URL,
+    baseURL: API_BASE,
     withCredentials: true,
     headers: {
         'Content-Type': 'application/json',
@@ -37,9 +37,16 @@ api.interceptors.response.use(
         if (response) {
             // 401 Unauthorized: Clear session and redirect to login
             if (response.status === 401 && !error.config.url.includes('/auth/')) {
-                // Redux state will be cleared via a dedicated action if we have access to store
-                // For now, redirect or let the calling component handle it
-                window.location.href = '/login';
+                // Don't redirect if it's a public GET request (like products list)
+                // or if specifically requested to skip redirect
+                const isPublicGet = error.config.method === 'get' &&
+                    (error.config.url.includes('/products') ||
+                        error.config.url.includes('/categories') ||
+                        error.config.url.includes('/cms/'));
+
+                if (!isPublicGet && !error.config.skipRedirect) {
+                    window.location.href = '/login';
+                }
             }
 
             // 409 Conflict: Special handling for Price Lock Expired

@@ -160,7 +160,7 @@ const Orders = () => {
                                     Share Verification
                                 </button>
                             )}
-                            <Link to={`/products`} className="text-[10px] uppercase tracking-widest text-gray-400 hover:text-luxury-gold transition-colors">Support & Inquiries</Link>
+                            <Link to={`/products`} className="text-[10px] uppercase tracking-widest text-gray-400 hover:text-luxury-gold transition-colors">Back</Link>
                             {['Pending', 'Processing'].includes(order.orderStatus) && (
                                 <button
                                     onClick={(e) => handleCancelRequest(e, order._id)}

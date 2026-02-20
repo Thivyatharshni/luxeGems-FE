@@ -319,7 +319,13 @@ const VideoStoryEngine = () => {
         );
     }
 
-    if (!isLoading && curatedVideos.length === 0) return null;
+    if (!isLoading && curatedVideos.length === 0) {
+        return (
+            <section className="py-20 bg-luxury-ivory text-center">
+                <p className="text-gray-400 font-playfair italic">Our story archives are being updated...</p>
+            </section>
+        );
+    }
 
     return (
         <section
