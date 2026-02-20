@@ -26,8 +26,7 @@ const AdminNotifications = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { items: notifications, unreadCount } = useSelector((state) => state.notifications);
-    const [isHovered, setIsHovered] = useState(false);
-    const [timeoutId, setTimeoutId] = useState(null);
+    const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
         dispatch(fetchNotifications());
@@ -37,22 +36,14 @@ const AdminNotifications = () => {
         return () => clearInterval(pollInterval);
     }, [dispatch]);
 
-    const handleMouseEnter = () => {
-        if (timeoutId) clearTimeout(timeoutId);
-        setIsHovered(true);
-    };
-
-    const handleMouseLeave = () => {
-        const id = setTimeout(() => setIsHovered(false), 300);
-        setTimeoutId(id);
-    };
+    const toggleOpen = () => setIsOpen(!isOpen);
 
     const handleNotificationClick = (notification) => {
         if (!notification.isRead) {
             dispatch(markAsRead(notification._id));
         }
         navigate(notification.link);
-        setIsHovered(false);
+        setIsOpen(false);
     };
 
     const getIcon = (type) => {
@@ -66,12 +57,11 @@ const AdminNotifications = () => {
     };
 
     return (
-        <div
-            className="relative"
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-        >
-            <button className="relative p-2 text-gray-400 hover:text-luxury-gold-brand transition-all duration-300 group">
+        <div className="relative">
+            <button
+                onClick={toggleOpen}
+                className="relative p-2 text-gray-400 hover:text-luxury-gold-brand transition-all duration-300 group"
+            >
                 <Bell className={`w-5 h-5 transition-transform duration-500 ${unreadCount > 0 ? 'group-hover:animate-bounce' : ''}`} />
                 <AnimatePresence>
                     {unreadCount > 0 && (
@@ -88,82 +78,89 @@ const AdminNotifications = () => {
             </button>
 
             <AnimatePresence>
-                {isHovered && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 15, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 15, scale: 0.95 }}
-                        transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
-                        className="absolute right-0 top-full pt-4 z-50 w-[340px] md:w-[380px]"
-                    >
-                        <div className="bg-white border border-luxury-gold-brand/10 shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-2xl overflow-hidden backdrop-blur-xl bg-white/95">
-                            {/* Header */}
-                            <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between bg-luxury-ivory/50">
-                                <h3 className="text-[11px] uppercase tracking-[0.2em] font-extrabold text-luxury-charcoal">
-                                    Vault Activity
-                                </h3>
-                                {unreadCount > 0 && (
-                                    <button
-                                        onClick={() => dispatch(markAllAsRead())}
-                                        className="text-[9px] uppercase tracking-widest text-luxury-gold-brand hover:text-black font-bold transition-colors flex items-center gap-1.5"
-                                    >
-                                        <CheckCircle2 className="w-3 h-3" />
-                                        Mark all Read
-                                    </button>
-                                )}
-                            </div>
-
-                            {/* List */}
-                            <div className="max-h-[400px] overflow-y-auto custom-scrollbar bg-white">
-                                {notifications.length > 0 ? (
-                                    notifications.map((n) => (
-                                        <div
-                                            key={n._id}
-                                            onClick={() => handleNotificationClick(n)}
-                                            className={`px-6 py-5 border-b border-gray-50 cursor-pointer transition-all duration-300 relative group ${!n.isRead ? 'bg-luxury-gold-brand/5' : 'hover:bg-gray-50'}`}
+                {isOpen && (
+                    <>
+                        {/* Click away overlay */}
+                        <div
+                            className="fixed inset-0 z-40"
+                            onClick={() => setIsOpen(false)}
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, y: 15, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 15, scale: 0.95 }}
+                            transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
+                            className="absolute right-0 top-full pt-4 z-50 w-[85vw] sm:w-[380px] max-w-[380px]"
+                        >
+                            <div className="bg-white border border-luxury-gold-brand/10 shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-2xl overflow-hidden backdrop-blur-xl bg-white/95">
+                                {/* Header */}
+                                <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between bg-luxury-ivory/50">
+                                    <h3 className="text-[11px] uppercase tracking-[0.2em] font-extrabold text-luxury-charcoal">
+                                        Vault Activity
+                                    </h3>
+                                    {unreadCount > 0 && (
+                                        <button
+                                            onClick={() => dispatch(markAllAsRead())}
+                                            className="text-[9px] uppercase tracking-widest text-luxury-gold-brand hover:text-black font-bold transition-colors flex items-center gap-1.5"
                                         >
-                                            <div className="flex gap-4">
-                                                <div className={`w-10 h-10 rounded-full flex items-center justify-center border transition-all duration-500 ${!n.isRead ? 'bg-white border-luxury-gold-brand/20 shadow-md scale-110' : 'bg-gray-50 border-gray-100 group-hover:bg-white group-hover:border-luxury-gold-brand/10'}`}>
-                                                    {getIcon(n.type)}
+                                            <CheckCircle2 className="w-3 h-3" />
+                                            Mark all Read
+                                        </button>
+                                    )}
+                                </div>
+
+                                {/* List */}
+                                <div className="max-h-[400px] overflow-y-auto custom-scrollbar bg-white">
+                                    {notifications.length > 0 ? (
+                                        notifications.map((n) => (
+                                            <div
+                                                key={n._id}
+                                                onClick={() => handleNotificationClick(n)}
+                                                className={`px-6 py-5 border-b border-gray-50 cursor-pointer transition-all duration-300 relative group ${!n.isRead ? 'bg-luxury-gold-brand/5' : 'hover:bg-gray-50'}`}
+                                            >
+                                                <div className="flex gap-4">
+                                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center border transition-all duration-500 ${!n.isRead ? 'bg-white border-luxury-gold-brand/20 shadow-md scale-110' : 'bg-gray-50 border-gray-100 group-hover:bg-white group-hover:border-luxury-gold-brand/10'}`}>
+                                                        {getIcon(n.type)}
+                                                    </div>
+                                                    <div className="flex-1 space-y-1">
+                                                        <p className={`text-[12px] leading-relaxed transition-colors ${!n.isRead ? 'text-black font-semibold' : 'text-gray-500'}`}>
+                                                            {n.message}
+                                                        </p>
+                                                        <p className="text-[9px] text-gray-400 font-medium flex items-center gap-2">
+                                                            {formatDistanceToNow(new Date(n.createdAt))} ago
+                                                            {!n.isRead && <span className="w-1 h-1 bg-luxury-gold-brand rounded-full animate-pulse" />}
+                                                        </p>
+                                                    </div>
                                                 </div>
-                                                <div className="flex-1 space-y-1">
-                                                    <p className={`text-[12px] leading-relaxed transition-colors ${!n.isRead ? 'text-black font-semibold' : 'text-gray-500'}`}>
-                                                        {n.message}
-                                                    </p>
-                                                    <p className="text-[9px] text-gray-400 font-medium flex items-center gap-2">
-                                                        {formatDistanceToNow(new Date(n.createdAt))} ago
-                                                        {!n.isRead && <span className="w-1 h-1 bg-luxury-gold-brand rounded-full animate-pulse" />}
-                                                    </p>
-                                                </div>
+                                                {!n.isRead && (
+                                                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-luxury-gold-brand shadow-[2px_0_10px_rgba(198,161,74,0.3)]" />
+                                                )}
                                             </div>
-                                            {!n.isRead && (
-                                                <div className="absolute left-0 top-0 bottom-0 w-1 bg-luxury-gold-brand shadow-[2px_0_10px_rgba(198,161,74,0.3)]" />
-                                            )}
+                                        ))
+                                    ) : (
+                                        <div className="py-20 text-center space-y-4">
+                                            <div className="w-16 h-16 bg-luxury-ivory rounded-full flex items-center justify-center mx-auto opacity-50">
+                                                <Bell className="w-6 h-6 text-luxury-gold-brand" />
+                                            </div>
+                                            <div className="space-y-1 px-10">
+                                                <p className="text-[13px] font-playfair italic text-gray-500">No recent vault activity.</p>
+                                                <p className="text-[9px] uppercase tracking-widest text-gray-400">Notifications will appear here as they occur.</p>
+                                            </div>
                                         </div>
-                                    ))
-                                ) : (
-                                    <div className="py-20 text-center space-y-4">
-                                        <div className="w-16 h-16 bg-luxury-ivory rounded-full flex items-center justify-center mx-auto opacity-50">
-                                            <Bell className="w-6 h-6 text-luxury-gold-brand" />
-                                        </div>
-                                        <div className="space-y-1 px-10">
-                                            <p className="text-[13px] font-playfair italic text-gray-500">No recent vault activity.</p>
-                                            <p className="text-[9px] uppercase tracking-widest text-gray-400">Notifications will appear here as they occur.</p>
-                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Footer */}
+                                {notifications.length > 0 && (
+                                    <div className="px-6 py-3 bg-gray-50/50 border-t border-gray-50 text-center">
+                                        <span className="text-[8px] uppercase tracking-[0.3em] text-gray-400 font-bold">
+                                            LuxeGems Command Center
+                                        </span>
                                     </div>
                                 )}
                             </div>
-
-                            {/* Footer */}
-                            {notifications.length > 0 && (
-                                <div className="px-6 py-3 bg-gray-50/50 border-t border-gray-50 text-center">
-                                    <span className="text-[8px] uppercase tracking-[0.3em] text-gray-400 font-bold">
-                                        LuxeGems Command Center
-                                    </span>
-                                </div>
-                            )}
-                        </div>
-                    </motion.div>
+                        </motion.div>
+                    </>
                 )}
             </AnimatePresence>
         </div>

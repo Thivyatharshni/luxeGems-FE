@@ -118,7 +118,7 @@ const ProductListing = () => {
                 productsCount={products?.length || 0}
             />
 
-            <div className="container-luxury py-10 lg:py-16">
+            <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-10 lg:py-16">
                 {/* Active Filter Pills */}
                 <AnimatePresence mode="popLayout">
                     {activeFilterTags.length > 0 && (

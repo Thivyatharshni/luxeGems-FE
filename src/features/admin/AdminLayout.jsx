@@ -7,6 +7,7 @@ import AdminNotifications from './AdminNotifications';
 const AdminLayout = ({ children }) => {
     const location = useLocation();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
 
     const { user } = useSelector((state) => state.auth);
     const menuItems = [
@@ -106,8 +107,11 @@ const AdminLayout = ({ children }) => {
                         <div className="h-8 w-px bg-luxury-gold/10 hidden sm:block"></div>
 
                         {/* Admin Profile Dropdown */}
-                        <div className="relative group">
-                            <button className="flex items-center gap-3 hover:opacity-70 transition-opacity">
+                        <div className="relative">
+                            <button
+                                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                                className="flex items-center gap-3 hover:opacity-70 transition-opacity"
+                            >
                                 <div className="text-right hidden md:block">
                                     <p className="text-xs font-bold text-luxury-indigo">{user?.name || 'Admin'}</p>
                                     <p className="text-[9px] uppercase tracking-widest text-luxury-gold">Administrator</p>
@@ -120,23 +124,44 @@ const AdminLayout = ({ children }) => {
                             </button>
 
                             {/* Dropdown Menu */}
-                            <div className="absolute right-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 z-50 min-w-[160px] sm:min-w-[180px]">
-                                <div className="bg-white border border-luxury-gold/10 shadow-[0_10px_30px_rgba(0,0,0,0.1)] rounded-lg py-2 overflow-hidden">
-                                    <Link to="/admin/profile" className="block px-4 py-2 text-[10px] uppercase tracking-widest text-luxury-charcoal hover:bg-luxury-gold/5 hover:text-luxury-gold transition-colors">
-                                        Admin Profile
-                                    </Link>
-                                    <div className="h-px bg-luxury-gold/5 my-1"></div>
-                                    <button
-                                        onClick={() => {
-                                            localStorage.removeItem('token');
-                                            window.location.href = '/login';
-                                        }}
-                                        className="w-full text-left px-4 py-2 text-[10px] uppercase tracking-widest text-red-400 hover:bg-red-50 transition-colors"
-                                    >
-                                        Logout
-                                    </button>
-                                </div>
-                            </div>
+                            <AnimatePresence>
+                                {isProfileOpen && (
+                                    <>
+                                        {/* Click away overlay */}
+                                        <div
+                                            className="fixed inset-0 z-40"
+                                            onClick={() => setIsProfileOpen(false)}
+                                        />
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            className="absolute right-0 top-full pt-2 z-50 min-w-[160px] sm:min-w-[180px]"
+                                        >
+                                            <div className="bg-white border border-luxury-gold/10 shadow-[0_10px_30px_rgba(0,0,0,0.1)] rounded-lg py-2 overflow-hidden">
+                                                <Link
+                                                    to="/admin/profile"
+                                                    onClick={() => setIsProfileOpen(false)}
+                                                    className="block px-4 py-2 text-[10px] uppercase tracking-widest text-luxury-charcoal hover:bg-luxury-gold/5 hover:text-luxury-gold transition-colors"
+                                                >
+                                                    Admin Profile
+                                                </Link>
+                                                <div className="h-px bg-luxury-gold/5 my-1"></div>
+                                                <button
+                                                    onClick={() => {
+                                                        setIsProfileOpen(false);
+                                                        localStorage.removeItem('token');
+                                                        window.location.href = '/login';
+                                                    }}
+                                                    className="w-full text-left px-4 py-2 text-[10px] uppercase tracking-widest text-red-400 hover:bg-red-50 transition-colors"
+                                                >
+                                                    Logout
+                                                </button>
+                                            </div>
+                                        </motion.div>
+                                    </>
+                                )}
+                            </AnimatePresence>
                         </div>
                     </div>
                 </header>

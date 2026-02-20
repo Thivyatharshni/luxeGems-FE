@@ -29,6 +29,7 @@ import ProtectedRoute from './features/auth/ProtectedRoute';
 import { fetchCart } from './features/cart/cartSlice';
 import { fetchWishlist } from './features/wishlist/wishlistSlice';
 import Button from './components/ui/Button';
+import Chatbot from './components/ui/Chatbot';
 
 import UserProfile from './features/users/UserProfile';
 
@@ -443,6 +444,7 @@ function App() {
 
         {/* Add more routes as we progress */}
       </Routes>
+      <Chatbot />
     </Router>
   );
 }

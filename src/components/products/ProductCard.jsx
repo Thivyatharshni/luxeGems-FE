@@ -83,7 +83,7 @@ const ProductCard = ({ product }) => {
                         <span className="text-[10px] text-gray-300 line-through tracking-widest font-bold">
                             ₹{(pricing.finalPrice * 1.15).toLocaleString('en-IN')}
                         </span>
-                        <span className="font-inter font-bold text-luxury-indigo text-xl tracking-tight">
+                        <span className="font-inter font-bold text-luxury-indigo text-lg sm:text-xl tracking-tight">
                             ₹{pricing.finalPrice?.toLocaleString('en-IN')}
                         </span>
                     </div>
