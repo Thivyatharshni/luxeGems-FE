@@ -11,10 +11,15 @@ const API_BASE = API_URL || 'http://localhost:5000/api/v1';
 const api = axios.create({
     baseURL: API_BASE,
     withCredentials: true,
+    timeout: 15000, // 15s timeout to prevent hanging UI
     headers: {
         'Content-Type': 'application/json',
     },
 });
+
+if (import.meta.env.DEV) {
+    console.log(`API Base URL: ${API_BASE}`);
+}
 
 // Request interceptor to attach token
 api.interceptors.request.use(

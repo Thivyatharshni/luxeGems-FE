@@ -12,16 +12,16 @@ const Chatbot = () => {
     ]);
     const [inputValue, setInputValue] = useState('');
     const dispatch = useDispatch();
-    const { items: products } = useSelector((state) => state.products);
+    const { items: products, isLoading: isProductsLoading } = useSelector((state) => state.products);
     const messagesEndRef = useRef(null);
 
-    // Ensure data is available even on landing page
+    // Only fetch once if not already loading and no products exist
     useEffect(() => {
-        if (products.length === 0) {
+        if (products.length === 0 && !isProductsLoading) {
             dispatch(fetchProducts());
             dispatch(fetchCategories());
         }
-    }, [dispatch, products.length]);
+    }, [dispatch, products.length, isProductsLoading]);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });

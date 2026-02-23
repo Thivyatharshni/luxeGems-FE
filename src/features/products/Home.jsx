@@ -270,8 +270,14 @@ const Home = () => {
     const heroSection = cms.page?.sections?.find(s => s.type === 'Hero' && s.isActive);
     const heroContent = heroSection?.content || defaultHero;
 
-    // Loading State - only show if we have absolutely nothing
-    if (cms.isLoading && !cms.page) {
+    // Loading State - only show if we have absolutely nothing and it's taking a while
+    const [timedOut, setTimedOut] = useState(false);
+    useEffect(() => {
+        const timer = setTimeout(() => setTimedOut(true), 5000);
+        return () => clearTimeout(timer);
+    }, []);
+
+    if (cms.isLoading && !cms.page && !timedOut) {
         return (
             <div className="h-screen flex items-center justify-center bg-luxury-indigo text-luxury-gold">
                 <div className="text-center">
